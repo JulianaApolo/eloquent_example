@@ -1,0 +1,32 @@
+version: '3.7'
+services:
+    eloquent_app:
+        container_name: eloquent_app_server
+        build:
+          context: ./resources/docker/apache
+          dockerfile: Dockerfile
+        volumes:
+          - ./:/var/www/html
+        ports:
+          - ${DOCKER_HTTP_PORT}:80
+        depends_on:
+          - eloquent_db
+    eloquent_db:
+      container_name: eloquent_db_server
+      build:
+        context: ./resources/docker/mysql
+        dockerfile: Dockerfile
+      volumes:
+       - /etc/timezone:/etc/timezone:ro
+       - /etc/localtime:/etc/localtime:ro
+       - eloquent-mysql-data:/var/lib/mysql
+      ports:
+        - ${DOCKER_DB_PORT}:3306
+      environment:
+       - DB_HOST=eloquent_db_server
+       - MYSQL_ROOT_PASSWORD=eloquent
+       - MYSQL_DATABASE=dev_eloquent
+       - MYSQL_USER=developers
+       - MYSQL_PASSWORD=eloquent
+volumes:
+  eloquent-mysql-data:
